@@ -1,0 +1,22 @@
+#!/usr/bin/env -S ninja -f 
+
+cpp = clang++
+
+rule dummy
+  command = echo dummy $in "->" $out
+  description = dummy rule to link $in -> $out
+
+rule cpp
+  command = $cpp -fmodules -fcolor-diagnostics -std=gnu++2b -Wall -Wno-invalid-source-encoding -mtune=native -march=native -O3 -MT $out -MF $out.d -o $out $in
+  description = Compile $out
+  depfile = $out.d
+  deps = gcc
+
+rule searchParams
+  command = time ./blakePow
+  description = Search for stuff
+  pool = console
+
+build ./blakePow.cpp: dummy
+build ./blakePow: cpp ./blakePow.cpp
+build searchParams : searchParams ./blakePow
